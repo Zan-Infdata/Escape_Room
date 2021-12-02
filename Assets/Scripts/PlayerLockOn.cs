@@ -14,7 +14,6 @@ public class PlayerLockOn : MonoBehaviour{
     public Image focusBar_1;
 
     [Header("Range and Layers")]
-    public Collider range;
     public LayerMask enemyLayers;
     private bool onPlayer;
     public bool isFocused = false;
