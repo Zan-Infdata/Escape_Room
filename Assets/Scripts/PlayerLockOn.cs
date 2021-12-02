@@ -13,6 +13,10 @@ public class PlayerLockOn : MonoBehaviour{
     public Image focusBar_0;
     public Image focusBar_1;
 
+    public float lockOnDelay = 2f;
+    private float nextLockOn;
+    private bool hasLockedOn = false;
+
     [Header("Range and Layers")]
     public LayerMask enemyLayers;
     private bool onPlayer;
@@ -61,6 +65,8 @@ public class PlayerLockOn : MonoBehaviour{
             }
 
         }   
+
+        Debug.Log(Time.time >= nextLockOn);
         
     }
 
@@ -100,26 +106,39 @@ public class PlayerLockOn : MonoBehaviour{
 
     //callback function that changes targets
     public void OnSwap(){
+        //prevent spamming
+        if(Time.time >= nextLockOn && hasLockedOn){
 
+            if(viableEnemies.Count > 1){
 
-        if(viableEnemies.Count > 1){
+                dump = viableEnemies.First.Value;
 
-            dump = viableEnemies.First.Value;
+                viableEnemies.AddLast(dump);
+                viableEnemies.RemoveFirst();
 
-            viableEnemies.AddLast(dump);
-            viableEnemies.RemoveFirst();
-
-            lot.Follow(viableEnemies.First.Value);
-            currEnemy = viableEnemies.First.Value;
+                lot.Follow(viableEnemies.First.Value);
+                currEnemy = viableEnemies.First.Value;
             
+            }
+
         }
+
+
     }
 
     public void LockedOn(){
 
-        isFocused = true;
-        targetFlagRenderer.material.SetColor("_Color", Color.blue);
-        enableFocusBars();
+        if(Time.time >= nextLockOn){
+            isFocused = true;
+            targetFlagRenderer.material.SetColor("_Color", Color.blue);
+            enableFocusBars();
+            //delay next lock on to prevent spaming
+            nextLockOn = Time.time + 1f / lockOnDelay;
+            hasLockedOn = true;
+
+        }
+
+
 
     }
 
@@ -128,6 +147,8 @@ public class PlayerLockOn : MonoBehaviour{
         isFocused = false;
         targetFlagRenderer.material.SetColor("_Color", Color.green);
         dissableFocusBars();
+        //reset spam prevention
+        hasLockedOn = false;
     }
 
     private void enableFocusBars(){
