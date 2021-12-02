@@ -39,7 +39,7 @@ public class PlayerLockOn : MonoBehaviour{
     }
 
     // Update is called once per frame
-    void Update(){
+    void FixedUpdate(){
         //check if there is a viable target and it is not already being followed
         if(viableEnemies.Count > 0){
             GameObject first = viableEnemies.First.Value;
@@ -65,8 +65,6 @@ public class PlayerLockOn : MonoBehaviour{
             }
 
         }   
-
-        Debug.Log(Time.time >= nextLockOn);
         
     }
 

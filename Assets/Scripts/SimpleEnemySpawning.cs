@@ -22,7 +22,7 @@ public class SimpleEnemySpawning : MonoBehaviour{
     }
 
     public void SpawnEnemy(){
-        int spawnGround = (int) Random.Range(0,3);
+        int spawnGround = (int) Random.Range(0,3.4f);
         Debug.Log(spawnGround);
 
         switch (spawnGround){

@@ -37,6 +37,11 @@ public class PlayerHealth : MonoBehaviour{
     }
 
     public void ResetPlayerHealth(){
+
+        //REMOVE ONLY FOR PLAYTESTING
+        transform.position = new Vector3(0f,7f,0f);
+
+
         currHealth = maxHealth;
         Time.timeScale = 1;
         btn.gameObject.SetActive(false);

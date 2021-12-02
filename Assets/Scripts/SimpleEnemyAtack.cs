@@ -15,7 +15,7 @@ public class SimpleEnemyAtack : MonoBehaviour
     public float attackRange = 1f;
     public float attackDetectRange = 1.2f;
     public bool canAttack = true;
-    public float attackDelay = 1f;
+    public float attackDelay = 0.5f;
     private SimpleEnemyMovement sem;
 
 
