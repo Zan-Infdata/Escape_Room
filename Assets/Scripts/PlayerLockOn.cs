@@ -144,7 +144,6 @@ public class PlayerLockOn : MonoBehaviour{
             if(Vector3.Distance(enemy.Value.transform.position, transform.position) > loseDetectRange){
                 viableEnemies.Remove(enemy);
                 Debug.Log(enemy.Value.gameObject.name + " out of range");
-                OnSwap();
             }
             enemy = enemy.Next;
 
