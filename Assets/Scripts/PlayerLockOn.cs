@@ -19,15 +19,23 @@ public class PlayerLockOn : MonoBehaviour{
 
     [Header("Range and Layers")]
     public LayerMask enemyLayers;
-    private bool onPlayer;
+    public float detectRange = 15f;
+    public float loseDetectRange = 18f;
+    public bool onPlayer;
     public bool isFocused = false;
+    private Collider[] enemiesInRange;
     
     [Space]
     [Header("Current selected enemy")]
     public GameObject currEnemy;
     private GameObject dump;
 
+    public GameObject closest = null;
+    public GameObject secondClosest = null;
+
     public LinkedList<GameObject> viableEnemies = new LinkedList<GameObject>();
+    private LinkedList<GameObject> enemiesToRemove = new LinkedList<GameObject>();
+    private bool clearList = false;
 
     // Start is called before the first frame update
     void Awake(){
@@ -38,11 +46,33 @@ public class PlayerLockOn : MonoBehaviour{
         dissableFocusBars();
     }
 
+    void Update(){
+        
+        CheckEnemiesInRange();
+        
+    }
+
+    void LateUpdate(){
+        ClearList();
+        CheckEnemiesOutOfRange();
+        HandleMesh();
+        
+    }
+
+    void HandleMesh(){
+        if(onPlayer){
+            DissableMesh();
+        }
+        else{
+            Invoke("EnableMesh", 0.05f);
+        }
+    }
+
     // Update is called once per frame
     void FixedUpdate(){
         //check if there is a viable target and it is not already being followed
         if(viableEnemies.Count > 0){
-            GameObject first = viableEnemies.First.Value;
+            /*GameObject first = viableEnemies.First.Value;
             if(first != currEnemy){
 
                 lot.Follow(first);
@@ -53,15 +83,18 @@ public class PlayerLockOn : MonoBehaviour{
                 //show flag
                 Invoke("EnableMesh", 0.05f);
 
+            }*/
+            if(currEnemy == null){
+                currEnemy = viableEnemies.First.Value;
             }
+            lot.Follow(currEnemy);
+            onPlayer = false;
         }
         else{
             if(!onPlayer){
                 lot.Follow(gameObject);
                 currEnemy = null;
                 onPlayer = true;
-                //hide the flag
-                targetFlagMesh.enabled = false;
             }
 
         }   
@@ -72,7 +105,11 @@ public class PlayerLockOn : MonoBehaviour{
         targetFlagMesh.enabled = true;
     }
 
-    private void OnTriggerEnter(Collider enemy) {
+    private void DissableMesh(){
+        targetFlagMesh.enabled = false;
+    }
+
+    /*private void OnTriggerEnter(Collider enemy) {
 
         //check if it is an enemy
         if(enemyLayers == (enemyLayers | (1 << enemy.gameObject.layer))){
@@ -80,9 +117,44 @@ public class PlayerLockOn : MonoBehaviour{
             viableEnemies.AddLast(enemy.gameObject);
         }
    
+    }*/
+
+    //check if there are enemies in range
+    private void CheckEnemiesInRange(){
+        enemiesInRange = Physics.OverlapSphere(transform.position, detectRange, enemyLayers);
+        if(enemiesInRange.Length > 0){
+            foreach(Collider enemy in enemiesInRange){
+                if(!viableEnemies.Contains(enemy.gameObject)){
+                    viableEnemies.AddLast(enemy.gameObject);
+                    Debug.Log(enemy + " in range");
+                }
+            }
+            
+        }
+
     }
 
-    private void OnTriggerExit(Collider enemy) {
+    private void CheckEnemiesOutOfRange(){
+        LinkedListNode<GameObject> enemy = viableEnemies.First;
+        
+        //check if enemies are out of range
+        for(int i = viableEnemies.Count - 1; i >= 0; i--){
+            if(enemy == null)
+                continue;
+            if(Vector3.Distance(enemy.Value.transform.position, transform.position) > loseDetectRange){
+                viableEnemies.Remove(enemy);
+                Debug.Log(enemy.Value.gameObject.name + " out of range");
+                OnSwap();
+            }
+            enemy = enemy.Next;
+
+        }
+
+
+
+    }
+
+    /*private void OnTriggerExit(Collider enemy) {
 
         //check if it is an enemy
         if(enemyLayers == (enemyLayers | (1 << enemy.gameObject.layer))){
@@ -90,16 +162,26 @@ public class PlayerLockOn : MonoBehaviour{
             viableEnemies.Remove(enemy.gameObject);      
         }
    
-    }
+    }*/
 
     //if the target died remove it from the list
     public void TargetDied(GameObject go){
-        if(viableEnemies.Contains(go))
+        
+        clearList = true;
+       /* if(viableEnemies.Contains(go))
             viableEnemies.Remove(go);
         //if you killed a focused enemy focus others
         if(isFocused){
             Invoke("LockedOn", Time.deltaTime*2);
+        }*/
+    }
+
+    private void ClearList(){  
+        if(clearList){
+            viableEnemies.Clear();
+            clearList = false;
         }
+         
     }
 
     //callback function that changes targets
@@ -114,8 +196,31 @@ public class PlayerLockOn : MonoBehaviour{
                 viableEnemies.AddLast(dump);
                 viableEnemies.RemoveFirst();
 
-                lot.Follow(viableEnemies.First.Value);
-                currEnemy = viableEnemies.First.Value;
+
+                closest = new GameObject();
+                secondClosest = new GameObject();
+                closest.transform.position = new Vector3(transform.position.x + loseDetectRange, transform.position.y, transform.position.z);
+                secondClosest.transform.position = new Vector3(transform.position.x + loseDetectRange, transform.position.y, transform.position.z);
+                //find the closest and second closest to the player
+                foreach(GameObject enemy in viableEnemies){
+                    if(Vector3.Distance(enemy.gameObject.transform.position, transform.position) < Vector3.Distance(closest.transform.position, transform.position)){
+                        secondClosest = closest;
+                        closest = enemy;
+                        
+                    }
+                    else if(Vector3.Distance(enemy.gameObject.transform.position, transform.position) < Vector3.Distance(secondClosest.transform.position, transform.position)){
+                        secondClosest = enemy;
+                    }
+                }
+
+                if(currEnemy.Equals(closest)){
+                    currEnemy = secondClosest;
+                }
+                else{
+                    currEnemy = closest;
+                }
+
+                lot.Follow(currEnemy);
             
             }
 
@@ -128,14 +233,15 @@ public class PlayerLockOn : MonoBehaviour{
 
         if(Time.time >= nextLockOn){
             isFocused = true;
-            targetFlagRenderer.material.SetColor("_Color", Color.blue);
+            targetFlagRenderer.material.SetColor("_Color", Color.black);
             enableFocusBars();
             //delay next lock on to prevent spaming
             nextLockOn = Time.time + 1f / lockOnDelay;
-            hasLockedOn = true;
+            
 
         }
 
+        hasLockedOn = true;
 
 
     }
@@ -169,6 +275,19 @@ public class PlayerLockOn : MonoBehaviour{
             return null;
         else
             return currEnemy;
+    }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.DrawWireSphere(transform.position, loseDetectRange);
+    }
+
+    private void PrintViableEnemies() {
+
+        foreach (GameObject obj in viableEnemies){
+            Debug.Log(obj.name);
+        }
+
     }
 
 
