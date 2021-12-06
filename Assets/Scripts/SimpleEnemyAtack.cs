@@ -12,10 +12,12 @@ public class SimpleEnemyAtack : MonoBehaviour
     public LayerMask playerLayer;
     public Transform attackPoint;
     private MeshRenderer mr;
-    public float attackRange = 1f;
-    public float attackDetectRange = 1.2f;
+    public float attackRange = 0.7f;
+    public float attackDetectRange = 1f;
     public bool canAttack = true;
-    public float attackDelay = 0.5f;
+    public float nextAttack = 0f;
+    public float attackDelay = 0.2f;
+    private float attackSpeed = 0.8f;
     private SimpleEnemyMovement sem;
 
 
@@ -40,7 +42,7 @@ public class SimpleEnemyAtack : MonoBehaviour
                 //stop the enemy but wait a little
                 sem.StopMove();
                 canAttack = false;
-                StartCoroutine(EnemyAttack());
+                Invoke("MeleeAttack", attackDelay);
                 
             }      
         }
@@ -51,7 +53,7 @@ public class SimpleEnemyAtack : MonoBehaviour
     }
 
     //attack a player after a delay and stop the movement
-    IEnumerator EnemyAttack(){
+    /*IEnumerator EnemyAttack(){
         
 
         Debug.Log("Preparing to attack...");
@@ -60,6 +62,7 @@ public class SimpleEnemyAtack : MonoBehaviour
 
         playersDamaged =  Physics.OverlapSphere(attackPoint.position, attackRange, playerLayer);
         foreach(Collider player in playersDamaged){
+
             //TESTING PURPOSES
             mr.enabled = true;
             Invoke("TestAttack", 0.2f);
@@ -69,8 +72,29 @@ public class SimpleEnemyAtack : MonoBehaviour
         
         playersDamaged = null;
         canAttack = true;
-    }
+    }*/
 
+
+
+    void MeleeAttack(){
+
+        if(Time.time >= nextAttack){  
+            //TESTING PURPOSES 
+            mr.enabled = true;
+            Invoke("TestAttack", 0.2f);
+
+            playersDamaged =  Physics.OverlapSphere(attackPoint.position, attackRange, playerLayer);
+            
+            foreach(Collider player in playersDamaged){    
+                player.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
+            }
+
+            //delay next attack
+            nextAttack = Time.time + 1f / attackSpeed;
+        }
+
+        canAttack = true;
+    }
 
     private void OnDrawGizmosSelected() {
         Gizmos.DrawWireSphere(attackPoint.position, attackDetectRange);

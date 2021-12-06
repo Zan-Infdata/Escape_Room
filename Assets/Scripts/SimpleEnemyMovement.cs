@@ -56,5 +56,5 @@ public class SimpleEnemyMovement : MonoBehaviour
         canMove = false;
     }
 
-
+ 
 }
