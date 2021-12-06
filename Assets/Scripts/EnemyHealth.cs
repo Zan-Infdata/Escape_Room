@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour{
 
@@ -8,11 +9,13 @@ public class EnemyHealth : MonoBehaviour{
     [Header("Health")]
     public float maxHealth = 100f;
     public float currHealth;
+    
 
 
     // Start is called before the first frame update
     void Awake(){
         currHealth = maxHealth;
+        
         
     }
 
@@ -40,6 +43,8 @@ public class EnemyHealth : MonoBehaviour{
         //currHealth = maxHealth;
         //Debug.Log("Enemy health reset!");
     }
+
+
 
 
 }

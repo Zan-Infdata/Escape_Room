@@ -10,10 +10,15 @@ public class PlayerHealth : MonoBehaviour{
 
     public Button btn;
 
+    public Slider slider;
+
 
     // Start is called before the first frame update
     void Start(){
+        
+        slider.maxValue = maxHealth;
         ResetPlayerHealth();
+        
         
     }
 
@@ -25,6 +30,7 @@ public class PlayerHealth : MonoBehaviour{
     public void TakeDamage(float damageTaken){
         Debug.Log("Player was hurt for " + damageTaken);
         currHealth -= damageTaken;
+        SetHealthBar();
         if(currHealth <= 0){
             PlayerDied();
         }
@@ -45,6 +51,12 @@ public class PlayerHealth : MonoBehaviour{
         currHealth = maxHealth;
         Time.timeScale = 1;
         btn.gameObject.SetActive(false);
+        SetHealthBar();
+    }
+
+    void SetHealthBar(){
+        slider.value = currHealth;
+        
     }
 
 }

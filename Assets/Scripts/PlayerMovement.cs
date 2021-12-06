@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 
@@ -13,6 +14,10 @@ public class PlayerMovement : MonoBehaviour{
 	[Space]
 	[Header("Movement")]	
     public CharacterController controller;
+    public Slider slider;
+    public Image fill;
+    private bool staminaBar = false;
+    private bool staminaBarExhausted = false;
     private float walkSpeed = 6f;
     private float runSpeed = 10f;
     private float exhaustSpeed = 4f;
@@ -65,6 +70,7 @@ public class PlayerMovement : MonoBehaviour{
         initStepOffset = controller.stepOffset;
 
         speed = walkSpeed;
+        slider.maxValue = runTimerInit;
 
         turnFocusTimeInit = turnFocusTime;
 
@@ -245,11 +251,14 @@ public class PlayerMovement : MonoBehaviour{
     private void HandleRun(){
 
         if(isRunning && runTimer >= 0){
+            
             runTimer -= staminaDecreaseSpeed * Time.deltaTime;
+            slider.value = runTimer;
         }
         else if(runTimer < 0 && !isExhausted){
             StopRun();
             isExhausted = true;
+            slider.maxValue = exhaustTimeInit;
             speed = exhaustSpeed;
             exhaustTime = exhaustTimeInit;
         }
@@ -261,6 +270,8 @@ public class PlayerMovement : MonoBehaviour{
 
         if(runTimer < runTimerInit && (!isRunning || isExhausted)){
             runTimer += recoverySpeed * Time.deltaTime;
+            if(!isExhausted)
+                slider.value = runTimer;
         }
 
     }
@@ -268,14 +279,53 @@ public class PlayerMovement : MonoBehaviour{
     private void HandleExhaustion(){
         if(exhaustTime >= 0){
             exhaustTime -= exhaustRecoverySpeed * Time.deltaTime;
+            slider.value = exhaustTimeInit - exhaustTime;
         }
         else{
             if(!isRunning)
                 speed = walkSpeed;
+
             isExhausted = false;
+            slider.maxValue = runTimerInit;
+            slider.value = runTimer;
         }
     }
 
+    void HandleStaminaUI(){
+        
+        if(isRunning || isExhausted || (!isExhausted && runTimer < runTimerInit)){
+            if(!staminaBar){
+                slider.gameObject.SetActive(true);
+                staminaBar = true;
+            }
+                
+            if(isExhausted){
+                if(!staminaBarExhausted){
+
+                    staminaBarExhausted = true;
+                    fill.color = Color.red;
+                }
+                
+            }
+            else{
+                if(staminaBarExhausted){
+
+                    staminaBarExhausted = false;
+                    fill.color = Color.green;
+                }
+                
+            }
+
+        }
+        else{
+            if(staminaBar){
+                slider.gameObject.SetActive(false);
+                staminaBar = false;
+            }
+            
+        }
+        
+    }
 
     // Update is called once per frame
     void Update(){
@@ -289,6 +339,7 @@ public class PlayerMovement : MonoBehaviour{
         CalculateGravity();
         Jump();
         CheckStepOffset();
+        HandleStaminaUI();
         
 
     }

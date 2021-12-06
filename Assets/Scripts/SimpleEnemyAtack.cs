@@ -12,8 +12,8 @@ public class SimpleEnemyAtack : MonoBehaviour
     public LayerMask playerLayer;
     public Transform attackPoint;
     private MeshRenderer mr;
-    public float attackRange = 0.7f;
-    public float attackDetectRange = 1f;
+    public float attackRange = 1f;
+    public float attackDetectRange = 1.2f;
     public bool canAttack = true;
     public float nextAttack = 0f;
     public float attackDelay = 0.2f;
