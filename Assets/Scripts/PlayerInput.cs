@@ -21,6 +21,7 @@ public class PlayerInput : MonoBehaviour
     private PlayerMovement pm;
     private PlayerCombat pc;
     private PlayerLockOn plo;
+
     
     private void Awake() {
 
@@ -47,7 +48,9 @@ public class PlayerInput : MonoBehaviour
         runAction.canceled += ctx => pm.StopRun();
 
         moveAction.performed += ctx => pm.OnMove(ctx.ReadValue<Vector2>());
+        moveAction.started += ctx => pm.IsWalking();
         moveAction.canceled += ctx => pm.OnMove(ctx.ReadValue<Vector2>());
+        moveAction.canceled += ctx => pm.IsNotWalking();
 
         lockOnAction.performed += ctx => plo.LockedOn();
         lockOnAction.canceled += ctx => plo.OnSwap();

@@ -11,6 +11,13 @@ public class PlayerMovement : MonoBehaviour{
     private float initStepOffset;
     private float currStepOffset;
 
+    [Space]
+	[Header("Animation")]
+    public Animator animator;
+    private int isWalkingHash;
+    private int isRunningHash;
+
+
 	[Space]
 	[Header("Movement")]	
     public CharacterController controller;
@@ -65,16 +72,24 @@ public class PlayerMovement : MonoBehaviour{
     private Vector3 gravityMovement;
 
     void Awake() { 
+        //set up gravity
         gravityDirection = Vector3.down;
         initGravity = gravity;
+        //set initial step offset
         initStepOffset = controller.stepOffset;
-
+        //set initial speed
         speed = walkSpeed;
         slider.maxValue = runTimerInit;
-
+        //set initial tutn time
         turnFocusTimeInit = turnFocusTime;
-
+        //get scripts
         plo = gameObject.GetComponent<PlayerLockOn>();
+
+        //set animator hash values
+        isWalkingHash = Animator.StringToHash("isWalking");
+        isRunningHash = Animator.StringToHash("isRunning");
+
+
 
     }
 
@@ -83,6 +98,13 @@ public class PlayerMovement : MonoBehaviour{
 
         moveDir = dir;
 
+    }
+
+    public void IsWalking() {
+        animator.SetBool(isWalkingHash, true);
+    }
+    public void IsNotWalking() {
+        animator.SetBool(isWalkingHash, false);
     }
 
     private void Move(Vector2 direction){
@@ -236,31 +258,42 @@ public class PlayerMovement : MonoBehaviour{
 
     public void StartRun(){
 
-        if(!isExhausted){
+        if(!isExhausted && moveDir.magnitude >= 0.1f){
             speed = runSpeed;
             isRunning = true;
+            animator.SetBool(isRunningHash, true);
         }
+
+        
+
     }
 
     public void StopRun(){
         isRunning = false;
         if(!isExhausted)
             speed = walkSpeed;
+
+        animator.SetBool(isRunningHash, false);
     }
 
     private void HandleRun(){
 
-        if(isRunning && runTimer >= 0){
-            
-            runTimer -= staminaDecreaseSpeed * Time.deltaTime;
-            slider.value = runTimer;
+        if(moveDir.magnitude >= 0.1f){
+            if(isRunning && runTimer >= 0){
+                
+                runTimer -= staminaDecreaseSpeed * Time.deltaTime;
+                slider.value = runTimer;
+            }
+            else if(runTimer < 0 && !isExhausted){
+                StopRun();
+                isExhausted = true;
+                slider.maxValue = exhaustTimeInit;
+                speed = exhaustSpeed;
+                exhaustTime = exhaustTimeInit;
+            }
         }
-        else if(runTimer < 0 && !isExhausted){
+        else{
             StopRun();
-            isExhausted = true;
-            slider.maxValue = exhaustTimeInit;
-            speed = exhaustSpeed;
-            exhaustTime = exhaustTimeInit;
         }
 
 
@@ -277,10 +310,12 @@ public class PlayerMovement : MonoBehaviour{
     }
 
     private void HandleExhaustion(){
+        //check if you are still exhausted
         if(exhaustTime >= 0){
             exhaustTime -= exhaustRecoverySpeed * Time.deltaTime;
             slider.value = exhaustTimeInit - exhaustTime;
         }
+        //set everything to normal
         else{
             if(!isRunning)
                 speed = walkSpeed;
