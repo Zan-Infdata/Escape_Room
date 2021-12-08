@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour{
     private float initStepOffset;
     private float currStepOffset;
 
+	[Space]
+	[Header("Animation")]
+    public PlayerAnimation pa;
 
 	[Space]
 	[Header("Movement")]	
@@ -78,6 +81,7 @@ public class PlayerMovement : MonoBehaviour{
         turnFocusTimeInit = turnFocusTime;
         //get scripts
         plo = gameObject.GetComponent<PlayerLockOn>();
+        pa = gameObject.GetComponent<PlayerAnimation>();
 
 
     }

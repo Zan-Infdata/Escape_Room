@@ -491,7 +491,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.96410257, y: 1}
+    m_SensorSize: {x: 0.7880342, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -4985,6 +4985,7 @@ GameObject:
   - component: {fileID: 2144709821}
   - component: {fileID: 2144709824}
   - component: {fileID: 2144709823}
+  - component: {fileID: 2144709825}
   - component: {fileID: 2144709820}
   m_Layer: 10
   m_Name: Player
@@ -5025,11 +5026,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 032d841bdde59f848a607e9e4fb42d9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 270329251}
   controller: {fileID: 2144709819}
   slider: {fileID: 464161485}
   fill: {fileID: 1389436847}
-  isRunning: 0
   isExhausted: 0
   exhaustTime: 0
   runTimer: 0
@@ -5160,3 +5159,17 @@ MonoBehaviour:
   currEnemy: {fileID: 0}
   closest: {fileID: 0}
   secondClosest: {fileID: 0}
+--- !u!114 &2144709825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144709816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 374f85a6e189f7b4789899afd5d9c872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 270329251}
+  velocity: {x: 0, y: 0}

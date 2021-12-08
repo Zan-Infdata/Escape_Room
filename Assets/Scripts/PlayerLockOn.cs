@@ -289,5 +289,9 @@ public class PlayerLockOn : MonoBehaviour{
 
     }
 
+    public bool GetHasLockedOn(){
+        return hasLockedOn;
+    }
+
 
 }

@@ -53,13 +53,17 @@ public class PlayerInput : MonoBehaviour
         runAction.canceled += ctx => pa.AnimateRun();
 
         moveAction.performed += ctx => pm.OnMove(ctx.ReadValue<Vector2>());
+        moveAction.performed += ctx => pa.FocusRun(ctx.ReadValue<Vector2>());
         moveAction.started += ctx => pa.IsWalking();
         moveAction.canceled += ctx => pm.OnMove(ctx.ReadValue<Vector2>());
+        moveAction.canceled += ctx => pa.FocusRun(ctx.ReadValue<Vector2>());
         moveAction.canceled += ctx => pa.IsNotWalking();
 
-        lockOnAction.performed += ctx => plo.LockedOn();
+        lockOnAction.started += ctx => plo.LockedOn();
+        lockOnAction.started += ctx => pa.AnimateFocus();
         lockOnAction.canceled += ctx => plo.OnSwap();
         lockOnAction.canceled += ctx => plo.NotLockedOn();
+        lockOnAction.canceled += ctx => pa.AnimateFocus();
 
 
     }
