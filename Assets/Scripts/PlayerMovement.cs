@@ -11,12 +11,6 @@ public class PlayerMovement : MonoBehaviour{
     private float initStepOffset;
     private float currStepOffset;
 
-    [Space]
-	[Header("Animation")]
-    public Animator animator;
-    private int isWalkingHash;
-    private int isRunningHash;
-
 
 	[Space]
 	[Header("Movement")]	
@@ -28,7 +22,7 @@ public class PlayerMovement : MonoBehaviour{
     private float walkSpeed = 6f;
     private float runSpeed = 10f;
     private float exhaustSpeed = 4f;
-    public bool isRunning = false;
+    private bool isRunning = false;
     public bool isExhausted = false;
     private float exhaustTimeInit = 6f;
     public float exhaustTime;
@@ -85,11 +79,6 @@ public class PlayerMovement : MonoBehaviour{
         //get scripts
         plo = gameObject.GetComponent<PlayerLockOn>();
 
-        //set animator hash values
-        isWalkingHash = Animator.StringToHash("isWalking");
-        isRunningHash = Animator.StringToHash("isRunning");
-
-
 
     }
 
@@ -98,13 +87,6 @@ public class PlayerMovement : MonoBehaviour{
 
         moveDir = dir;
 
-    }
-
-    public void IsWalking() {
-        animator.SetBool(isWalkingHash, true);
-    }
-    public void IsNotWalking() {
-        animator.SetBool(isWalkingHash, false);
     }
 
     private void Move(Vector2 direction){
@@ -260,11 +242,8 @@ public class PlayerMovement : MonoBehaviour{
 
         if(!isExhausted && moveDir.magnitude >= 0.1f){
             speed = runSpeed;
-            isRunning = true;
-            animator.SetBool(isRunningHash, true);
-        }
-
-        
+            isRunning = true;           
+        }  
 
     }
 
@@ -272,8 +251,6 @@ public class PlayerMovement : MonoBehaviour{
         isRunning = false;
         if(!isExhausted)
             speed = walkSpeed;
-
-        animator.SetBool(isRunningHash, false);
     }
 
     private void HandleRun(){
@@ -381,6 +358,10 @@ public class PlayerMovement : MonoBehaviour{
 
     private void OnDrawGizmosSelected() {
         Gizmos.DrawWireSphere(groundCheck.position,groundCheckRange);
+    }
+
+    public bool GetIsRunning() {
+        return isRunning;
     }
 
 

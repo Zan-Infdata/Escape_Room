@@ -21,13 +21,16 @@ public class PlayerInput : MonoBehaviour
     private PlayerMovement pm;
     private PlayerCombat pc;
     private PlayerLockOn plo;
+    private PlayerAnimation pa;
 
     
     private void Awake() {
 
+        //get all the scripts
         pm = this.GetComponent<PlayerMovement>();
         pc = this.GetComponent<PlayerCombat>();
         plo = this.GetComponent<PlayerLockOn>();
+        pa = this.GetComponent<PlayerAnimation>();
         //set up all th input methods
         playerMap = actionAsset.FindActionMap("Player");
 
@@ -45,12 +48,14 @@ public class PlayerInput : MonoBehaviour
         attackAction.started += ctx => pc.Attack();
 
         runAction.started += ctx => pm.StartRun();
+        runAction.started += ctx => pa.AnimateRun();
         runAction.canceled += ctx => pm.StopRun();
+        runAction.canceled += ctx => pa.AnimateRun();
 
         moveAction.performed += ctx => pm.OnMove(ctx.ReadValue<Vector2>());
-        moveAction.started += ctx => pm.IsWalking();
+        moveAction.started += ctx => pa.IsWalking();
         moveAction.canceled += ctx => pm.OnMove(ctx.ReadValue<Vector2>());
-        moveAction.canceled += ctx => pm.IsNotWalking();
+        moveAction.canceled += ctx => pa.IsNotWalking();
 
         lockOnAction.performed += ctx => plo.LockedOn();
         lockOnAction.canceled += ctx => plo.OnSwap();
