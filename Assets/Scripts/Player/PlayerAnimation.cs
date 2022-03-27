@@ -19,7 +19,8 @@ public class PlayerAnimation : MonoBehaviour {
     private int velocityZHash;
     private int velocityXHash;
     private bool isRunning;
-    public Vector2 velocity = new Vector2(0f,0f);
+    public float velZ;
+    public float velX;
 
 
     // Start is called before the first frame update
@@ -60,8 +61,17 @@ public class PlayerAnimation : MonoBehaviour {
     }
 
     public void FocusRun(Vector2 direction){
-        animator.SetFloat(velocityZHash,direction.x);
-        animator.SetFloat(velocityXHash,direction.y);
+        if(direction.magnitude >= 0.1f){
+            velZ += direction.x * Time.deltaTime;
+            velX += direction.x * Time.deltaTime;
+
+        }
+        else{
+            velZ = 0f;
+            velX = 0f;
+        }
+        animator.SetFloat(velocityZHash,velZ);
+        animator.SetFloat(velocityXHash,velX);
     }
 
 }

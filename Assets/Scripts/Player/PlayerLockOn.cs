@@ -72,18 +72,6 @@ public class PlayerLockOn : MonoBehaviour{
     void FixedUpdate(){
         //check if there is a viable target and it is not already being followed
         if(viableEnemies.Count > 0){
-            /*GameObject first = viableEnemies.First.Value;
-            if(first != currEnemy){
-
-                lot.Follow(first);
-                currEnemy = first;
-                viableEnemies.AddLast(first);
-                viableEnemies.RemoveFirst();
-                onPlayer = false;
-                //show flag
-                Invoke("EnableMesh", 0.05f);
-
-            }*/
             if(currEnemy == null){
                 currEnemy = viableEnemies.First.Value;
             }
@@ -109,15 +97,6 @@ public class PlayerLockOn : MonoBehaviour{
         targetFlagMesh.enabled = false;
     }
 
-    /*private void OnTriggerEnter(Collider enemy) {
-
-        //check if it is an enemy
-        if(enemyLayers == (enemyLayers | (1 << enemy.gameObject.layer))){
-            
-            viableEnemies.AddLast(enemy.gameObject);
-        }
-   
-    }*/
 
     //check if there are enemies in range
     private void CheckEnemiesInRange(){
@@ -153,26 +132,11 @@ public class PlayerLockOn : MonoBehaviour{
 
     }
 
-    /*private void OnTriggerExit(Collider enemy) {
-
-        //check if it is an enemy
-        if(enemyLayers == (enemyLayers | (1 << enemy.gameObject.layer))){
-            
-            viableEnemies.Remove(enemy.gameObject);      
-        }
-   
-    }*/
 
     //if the target died remove it from the list
     public void TargetDied(GameObject go){
         
         clearList = true;
-       /* if(viableEnemies.Contains(go))
-            viableEnemies.Remove(go);
-        //if you killed a focused enemy focus others
-        if(isFocused){
-            Invoke("LockedOn", Time.deltaTime*2);
-        }*/
     }
 
     private void ClearList(){  
